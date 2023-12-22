@@ -1,8 +1,8 @@
 ---
-uid: cassandra_write_performance_benchmarks
+uid: cassandra_(single node)_write_performance_benchmarks
 ---
 
-# Cassandra write performance benchmarks
+# Cassandra (single node) write performance benchmarks
 
 ## Specifications of the test server
 

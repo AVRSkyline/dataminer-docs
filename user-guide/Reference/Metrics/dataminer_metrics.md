@@ -49,7 +49,8 @@ All specifications are provided based on the assumption that DMAs are running on
 - [Automatic incident tracking benchmarks](xref:automatic_incident_tracking_benchmarks)
 - [Automation benchmarks](xref:automation_benchmarks)
 - [Behavioral anomaly detection benchmarks](xref:behavioral_anomaly_detection_benchmarks)
-- [Cassandra write performance benchmarks](xref:cassandra_write_performance_benchmarks)
+- [Cassandra (singe node) write performance benchmarks](xref:cassandra_(singe node)_write_performance_benchmarks)
+- [Cassandra (cluster) write performance benchmarks](xref:cassandra_(cluster)_write_performance_benchmarks)
 - [Change history metrics](xref:change_history_benchmarks)
 - [Dashboards benchmarks](xref:dashboards_benchmarks)
 - [DataMiner Object Model benchmarks](xref:dataminer_object_model_benchmarks)
@@ -71,3 +72,4 @@ All specifications are provided based on the assumption that DMAs are running on
 - [User-Defined APIs benchmarks](xref:user-defined_API_benchmarks)
 - [View benchmarks](xref:view_benchmarks)
 - [Visual Overview benchmarks](xref:visual_overview_benchmarks)
+
