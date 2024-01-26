@@ -31,6 +31,79 @@ The *SLNetTypes* and *SLGlobal* implementations have been updated to support a n
 
 Also, a number of client messages have been adapted to support passing this new *AlarmTreeID/SLAlarmTreeKey* object, and a number of existing properties have been marked as obsolete.
 
+### Protocols
+
+#### FillArray now supports protocol.Leave and protocol.Clear [ID_38153]
+
+<!-- MR 10.5.0 - FR 10.4.2 -->
+
+Up to now, the SLProtocol `FillArray` methods did not any support `protocol.Clear` and `protocol.Leave`. An optional `useClearAndLeave` boolean argument has now been added to indicate that `protocol.Clear` and `protocol.Leave` should be treated as cell actions instead of cell values. When this argument is not provided, `useAndClear` will be considered false and `protocol.Clear` and `protocol.Leave` will be treated as cell values.
+
+The following methods have been added to the `SLProtocol` and `SLProtocolExt` interfaces:
+
+```csharp
+protocol.FillArray(int tableId, object[] columns, DateTime? timeInfo, bool useClearAndLeave)
+protocol.FillArray(int tableId, object[] columns, bool useClearAndLeave)
+protocol.FillArray(int tableId, List<object[]> columns, DateTime? timeInfo, bool useClearAndLeave)
+protocol.FillArray(int tableId, List<object[]> columns, bool useClearAndLeave)
+protocol.FillArray(int tableId, List<object[]> rows, SaveOption option, DateTime? timeInfo, bool useClearAndLeave)
+protocol.FillArray(int tableId, List<object[]> rows, SaveOption option, bool useClearAndLeave)
+protocol.FillArrayNoDelete(int tableId, object[] columns, DateTime? timeInfo, bool useClearAndLeave)
+protocol.FillArrayNoDelete(int tableId, object[] columns, bool useClearAndLeave)
+protocol.FillArrayNoDelete(int tableId, List<object[]> columns, DateTime? timeInfo, bool useClearAndLeave)
+protocol.FillArrayNoDelete(int tableId, List<object[]> columns, bool useClearAndLeave)
+protocol.FillArrayWithColumn(int tableId, int columnPid, object[] keys, object[] values, DateTime? timeInfo, bool useClearAndLeave)
+protocol.FillArrayWithColumn(int tableId, int columnPid, object[] keys, object[] values, bool useClearAndLeave)
+```
+
+The `QActionHelper` class has also been adapted.
+
+- `protocol.Clear` and `protocol.Leave` are now supported when calling the `FillArray` methods on the `QActionTable` class objects of `SLProtocolExt`. The following methods have been added:
+
+  ```csharp
+  protocol.QActionTable.FillArray(object[] columns, DateTime? timeInfo, bool useClearAndLeave)
+  protocol.QActionTable.FillArray(object[] columns, bool useClearAndLeave)
+  protocol.QActionTable.FillArray(List<object> columns, DateTime? timeInfo, bool useClearAndLeave)
+  protocol.QActionTable.FillArray(List<object> columns, bool useClearAndLeave)
+  protocol.QActionTable.FillArray(QActionTableRow[] rows, DateTime? timeInfo, bool useClearAndLeave)
+  protocol.QActionTable.FillArray(QActionTableRow[] rows, bool useClearAndLeave)
+  protocol.QActionTable.FillArray(List<QActionTableRow> rows, DateTime? timeInfo, bool useClearAndLeave)
+  protocol.QActionTable.FillArray(List<QActionTableRow> rows, bool useClearAndLeave)
+  protocol.QActionTable.FillArrayNoDelete(object[] columns, DateTime? timeInfo, bool useClearAndLeave)
+  protocol.QActionTable.FillArrayNoDelete(object[] columns, bool useClearAndLeave)
+  protocol.QActionTable.FillArrayNoDelete(List<object> columns, DateTime? timeInfo, bool useClearAndLeave)
+  protocol.QActionTable.FillArrayNoDelete(List<object> columns, bool useClearAndLeave)
+  protocol.QActionTable.FillArrayNoDelete(QActionTableRow[] rows, DateTime? timeInfo, bool useClearAndLeave)
+  protocol.QActionTable.FillArrayNoDelete(QActionTableRow[] rows, bool useClearAndLeave)
+  protocol.QActionTable.FillArrayNoDelete(List<QActionTableRow> rows, DateTime? timeInfo, bool useClearAndLeave)
+  protocol.QActionTable.FillArrayNoDelete(List<QActionTableRow> rows, bool useClearAndLeave)
+  protocol.QActionTable.SetColumn(int columnPid, string[] keys, object[] values, DateTime? timeInfo, bool useClearAndLeave)
+  protocol.QActionTable.SetColumn(int columnPid, string[] keys, object[] values, bool useClearAndLeave)
+  ```
+
+- `protocol.Clear` and `protocol.Leave` are now supported when calling the `SetRow` method on the `QActionTable` class objects of `SLProtocolExt`. The following methods have been provided:
+
+  ```csharp
+  protocol.QActionTable.AddRow(string row, DateTime? timeInfo)
+  protocol.QActionTable.AddRow(object[] row, DateTime? timeInfo)
+  protocol.QActionTable.AddRow(QActionTableRow row, DateTime? timeInfo)
+  protocol.QActionTable.AddRowReturnKey(DateTime? timeInfo)
+  protocol.QActionTable.AddRowReturnKey(object[] row, DateTime? timeInfo)
+  protocol.QActionTable.AddRowReturnKey(QActionTableRow row, DateTime timeInfo)
+  protocol.QActionTable.SetRow(QActionTableRow row, bool createRow, DateTime? timeInfo, bool useClearAndLeave)
+  protocol.QActionTable.SetRow(QActionTableRow row, bool createRow, DateTime? timeInfo)
+  protocol.QActionTable.SetRow(QActionTableRow row, bool createRow, bool useClearAndLeave)
+  protocol.QActionTable.SetRow(int row, object[] data, DateTime? timeInfo, bool useClearAndLeave)
+  protocol.QActionTable.SetRow(int row, object[] data, DateTime? timeInfo)
+  protocol.QActionTable.SetRow(int row, object[] data, bool useClearAndLeave)
+  protocol.QActionTable.SetRow(string row, object[] data, bool createRow, DateTime? timeInfo, bool useClearAndLeave)
+  protocol.QActionTable.SetRow(string row, object[] data, bool createRow, DateTime? timeInfo)
+  protocol.QActionTable.SetRow(string row, object[] data, bool createRow, bool useClearAndLeave)
+  ```
+
+  > [!NOTE]
+  > The `AddRow` and `SetRow` methods can now also perform history sets.
+
 ### DataMiner modules
 
 #### User-defined APIs: Query string support [ID_37733]
@@ -58,7 +131,7 @@ bool ContainsKey(string key);
 > - Multiple values can be added for one key.
 > - Query parameter keys are case-sensitive.
 
-#### Service & Resource Management - ResourceManagerHelper & ServiceManagerHelper: New Count methods [ID_37885]
+#### Service & Resource Management - ResourceManagerHelper & ServiceManagerHelper: New Count methods [ID_37885] [ID_38096]
 
 <!-- MR 10.5.0 - FR 10.4.2 -->
 
@@ -80,6 +153,9 @@ Example:
 var resourceManagerHelper = new ResourceManagerHelper(engine.SendSLNetSingleResponseMessage);
 var count = resourceManagerHelper.CountResources(ResourceExposers.Name.Contains("name"));
 ```
+
+> [!NOTE]
+> When a *Get Bookings* GQI query performs a count aggregate on ID, it will now use the new *ResourceManageHelper.CountReservationInstances* method. This will considerably enhance overall performance.
 
 #### DataMiner Object Models: Creating, updating and deleting multiple DOM instances in one call [ID_37891]
 
@@ -174,3 +250,16 @@ The `ExecuteScriptOnDomInstanceActionSettings` object has been made available as
 > - When `ScriptSettings` are filled in in the DomDefinition, these will take precedence.
 > - When, in the DomDefinition, the `ScriptSettings` object is null, the `ScriptSettings` of the `ModuleSettings` will be used instead.
 > - In order for the `ModuleSettings` objects to be used, the objects in the `ModuleSettingsOverrides` of the `DomDefinition` have to be *null*. Just making them empty is not sufficient.
+
+### Tools
+
+#### SLNetClientTest tool: New SLProtocol health statistics [ID_37617]
+
+<!-- MR 10.5.0 - FR 10.4.3 -->
+
+When, in the *SLNetClientTest* tool, you open the *Diagnostics > DMA* menu, you can now find the following new commands:
+
+| Command | Function |
+|---------|----------|
+| Health Stats (SLProtocol) > Stats      | Show the overall SLProtocol memory used by all elements. |
+| Health Stats (SLProtocol) > Details... | Show all details of a specific element.          |

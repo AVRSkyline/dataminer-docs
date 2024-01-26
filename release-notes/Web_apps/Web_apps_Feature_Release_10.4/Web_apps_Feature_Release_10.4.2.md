@@ -2,17 +2,19 @@
 uid: Web_apps_Feature_Release_10.4.2
 ---
 
-# DataMiner web apps Feature Release 10.4.2 – Preview
+# DataMiner web apps Feature Release 10.4.2
 
-> [!IMPORTANT]
-> We are still working on this release. Some release notes may still be modified or moved to a later release. Check back soon for updates!
+> [!NOTE]
+> For known issues with this version, refer to [Known issues](xref:Known_issues).
 
 > [!TIP]
 > For release notes for this release that are not related to the web applications, see [General Feature Release 10.4.2](xref:General_Feature_Release_10.4.2).
 
 ## Highlights
 
-*No highlights have been selected yet.*
+- [Dashboards app & Low-Code Apps: All visualizations now have an Info button to access their help page [ID_38224]](#dashboards-app--low-code-apps-all-visualizations-now-have-an-info-button-to-access-their-help-page-id_38224)
+- [Low-Code Apps: Separate 'Delete draft' and 'Delete app' buttons [ID_37878]](#low-code-apps-separate-delete-draft-and-delete-app-buttons-id_37878)
+- [Dashboards app & Low-Code Apps - GQI: New 'Get profile instances' data source [ID_38138]](#dashboards-app--low-code-apps---gqi-new-get-profile-instances-data-source-id_38138)
 
 ## New features
 
@@ -70,7 +72,10 @@ Up to now, when an empty list was saved in a DOM instance, the default filter us
 
 <!-- MR 10.3.0 [CU11] - FR 10.4.2 -->
 
-All GQI components (*State*, *Pie chart*, *Bar chart*, *Line chart*, *Table*, *Grid*, *Scheduler*, *Maps* and *Node Edge*) will now behave in the same way when loading.
+All GQI components (*State*, *Pie chart*, *Bar chart*, *Line chart*, *Table*, *Grid*, *Scheduler*,*Node Edge* and *Maps*) will now behave in the same way when loading.
+
+> [!NOTE]
+> The *Maps* component is currently still in soft launch.
 
 #### Dashboards app & Low-Code Apps - Query filter component: Number and date filters will no longer list discrete values unless they are meant to filter columns containing discrete values [ID_38114] [ID_38149]
 
@@ -83,7 +88,7 @@ When you enabled the filter assistance in a query filter component, up to now, a
 > - Filters for columns containing string values will continue to list discrete values, even when the columns do not contain discrete values.
 > - From now on, a filter list only show checkboxes when it lists boolean values, string values or discrete values.
 
-#### Dashboards app - GQI: New 'Get profile instances' data source [ID_38138]
+#### Dashboards app & Low-Code Apps - GQI: New 'Get profile instances' data source [ID_38138]
 
 <!-- MR 10.3.0 [CU11] - FR 10.4.2 -->
 
@@ -135,6 +140,9 @@ While configuring a *Grid*, *Timeline* or *Maps* component, it would incorrectly
 
 From now on, as long as the default template has not been created yet, a loading indicator will be displayed and it will not be possible to open the template editor.
 
+> [!NOTE]
+> The *Maps* component is currently still in soft launch.
+
 #### Dashboards app & Low-Code Apps: Color theme changes would not be applied immediately [ID_38082]
 
 <!-- MR 10.3.0 [CU11] - FR 10.4.2 -->
@@ -179,13 +187,11 @@ For example, when a feed was used in a script action parameter, the last feed va
 
 In a low-code app, the subheader would overlap the contents of a page. From now on, it will be displayed above the page.
 
-#### Dashboards app & Low-Code Apps - Maps component: Problem when removing a query and adding it again [ID_38148]
+#### Low-Code Apps: Problem when creating a DOM instance containing soft-deleted field descriptors [ID_38164]
 
 <!-- MR 10.3.0 [CU11] - FR 10.4.2 -->
 
-When you removed a query from a Maps component and then added it again, the component would show the following error:
-
-`Parameter '_destroy$' cannot be null`
+Creating a new DOM instance in a low-code app would fail when that DOM instance contained boolean field descriptors that had been marked as soft-deleted. Those field descriptors would incorrectly have their value set to false.
 
 #### Dashboards app & Low-Code Apps: Line & area chart would not render aggregation parameters correctly [ID_38166]
 
@@ -198,3 +204,69 @@ A Line & area chart with multiple aggregation parameters would not render those 
 <!-- MR 10.3.0 [CU11] - FR 10.4.2 -->
 
 When an error occurred in the table component after a user had sorted the data on a column, the *Restore initial view* button would incorrectly get disabled. As a result, it would not be possible to make the error disappear and undo the sort operation.
+
+#### Low-Code Apps - Visual Overview: Problem when opening a popup window from within another popup window [ID_38265]
+
+<!-- MR 10.3.0 [CU11] - FR 10.4.2 -->
+
+When, in a visual overview inside a low-code app, you opened a popup window from within another popup window, it would not be opened correctly.
+
+#### Dashboards app & Low-Code Apps: Chart components no longer showed any data after switching to another visualization and back [ID_38269]
+
+<!-- MR 10.3.0 [CU11] - FR 10.4.2 -->
+
+When you switched a *Column & bar chart* or *Pie & donut chart* component to another visualization, and then switched back, in some cases, it would no longer show any data.
+
+#### Dashboards app & Low-Code Apps: Visualization picker of a component would contain deprecated visualizations [ID_38270]
+
+<!-- MR 10.3.0 [CU11] - FR 10.4.2 -->
+
+In some cases, the visualization picker of a component would incorrectly contain visualizations that had been deprecated.
+
+#### Popup window issues in web apps [ID_38272]
+
+<!-- MR 10.3.0 [CU11] - FR 10.4.2 -->
+
+In all DataMiner web apps, a few minor popup window issues have been fixed.
+
+#### Dashboards app: Problem when refreshing a dashboard that contained a Parameter table component [ID_38291]
+
+<!-- MR 10.3.0 [CU11] - FR 10.4.2 -->
+
+When you refreshed a dashboard that contained a *Parameter table* component, the following error would be thrown:
+
+`TypeError: Cannot read properties of undefined (reading 'selectMany')`
+
+#### Dashboards app & Low-Code Apps - Template editor: '<=' operators in conditional cases would incorrectly be changed to '=' operators [ID_38296]
+
+<!-- MR 10.3.0 [CU11] - FR 10.4.2 -->
+
+When you saved a template with conditional cases that contained "<=" operators, those operators would incorrectly be changed to "=" operators.
+
+#### Dashboards app - 'Column & bar chart' and 'Pie & donut chart' components: Problem when deleting the query of which the data is being displayed [ID_38314]
+
+<!-- MR 10.3.0 [CU11] - FR 10.4.2 -->
+
+When you add multiple queries to a *Column & bar chart* or *Pie & donut chart* component, only the data retrieved by the first one added will be displayed. Up to now, when you deleted the query of which the data was displayed, the component would malfunction until the page was reloaded.
+
+From now on, when you delete the query of which the data is being displayed, the component will automatically switch to the second query added and display the data retrieved by that one.
+
+#### Dashboards app: Unnecessary component properties would be saved in a dashboard configuration [ID_38315]
+
+<!-- MR 10.3.0 [CU11] - FR 10.4.2 -->
+
+In some cases, unnecessary component properties would be saved in a dashboard configuration.
+
+#### Web apps: Problem with bottom tab control in mobile versions [ID_38422]
+
+<!-- MR 10.3.0 [CU11] - FR 10.4.2 [CU0] -->
+
+In the mobile versions of the web apps, the bottom tab control would incorrectly not display the contents of the selected tab.
+
+#### Low-Code Apps: Page content would not fit the screen [ID_38478]
+
+<!-- MR 10.3.0 [CU11] - FR 10.4.2 [CU0] -->
+
+In some cases, page content would not fit the screen and no scroll bars would appear. As a result, components could be cut off at the bottom of the screen.
+
+Also, the header bar of a page or panel in edit mode would not be aligned with the height of the side panel header.

@@ -2,10 +2,10 @@
 uid: General_Feature_Release_10.4.2
 ---
 
-# General Feature Release 10.4.2 – Preview
+# General Feature Release 10.4.2
 
-> [!IMPORTANT]
-> We are still working on this release. Some release notes may still be modified or moved to a later release. Check back soon for updates!
+> [!NOTE]
+> For known issues with this version, refer to [Known issues](xref:Known_issues).
 
 > [!IMPORTANT]
 > When downgrading from DataMiner Feature Release version 10.3.8 (or higher) to DataMiner Feature Release version 10.3.4, 10.3.5, 10.3.6 or 10.3.7, an extra manual step has to be performed. For more information, see [Downgrading a DMS](xref:MOP_Downgrading_a_DMS).
@@ -18,11 +18,24 @@ uid: General_Feature_Release_10.4.2
 
 ## Highlights
 
-*No highlights have been selected yet.*
+- [DataMiner Object Models: Creating, updating and deleting multiple DOM instances in one call [ID_37891]](#dataminer-object-models-creating-updating-and-deleting-multiple-dom-instances-in-one-call-id_37891)
+- [Configuration of database offload functionality moved from DBConfiguration.xml to DB.xml [ID_37446]](#configuration-of-database-offload-functionality-moved-from-dbconfigurationxml-to-dbxml-id_37446)
 
 ## New features
 
-#### Service & Resource Management - ResourceManagerHelper & ServiceManagerHelper: New Count methods [ID_37885]
+#### API Gateway: DataMiner modules can now register with API Gateway [ID_36575] [ID_37734]
+
+<!-- MR 10.4.0 - FR 10.4.2 -->
+
+DataMiner modules can now register with API Gateway. These modules can be either "regular modules" (e.g. SLNet) or "proxy modules" (e.g. a DxM that wishes to expose an API).
+
+All modules registered with API Gateway will be displayed under `/APIGateway/api/version`, showing the following properties:
+
+- Name
+- Version
+- Endpoint on which they can be accessed via API Gateway (proxy modules only)
+
+#### Service & Resource Management - ResourceManagerHelper & ServiceManagerHelper: New Count methods [ID_37885] [ID_38096]
 
 <!-- MR 10.5.0 - FR 10.4.2 -->
 
@@ -44,6 +57,9 @@ Example:
 var resourceManagerHelper = new ResourceManagerHelper(engine.SendSLNetSingleResponseMessage);
 var count = resourceManagerHelper.CountResources(ResourceExposers.Name.Contains("name"));
 ```
+
+> [!NOTE]
+> When a *Get Bookings* GQI query performs a count aggregate on ID, it will now use the new *ResourceManageHelper.CountReservationInstances* method. This will considerably enhance overall performance.
 
 #### DataMiner Object Models: Creating, updating and deleting multiple DOM instances in one call [ID_37891]
 
@@ -147,13 +163,100 @@ The `ExecuteScriptOnDomInstanceActionSettings` object has been made available as
 > - When, in the DomDefinition, the `ScriptSettings` object is null, the `ScriptSettings` of the `ModuleSettings` will be used instead.
 > - In order for the `ModuleSettings` objects to be used, the objects in the `ModuleSettingsOverrides` of the `DomDefinition` have to be *null*. Just making them empty is not sufficient.
 
+#### FillArray now supports protocol.Leave and protocol.Clear [ID_38153]
+
+<!-- MR 10.5.0 - FR 10.4.2 -->
+
+Up to now, the SLProtocol `FillArray` methods did not any support `protocol.Clear` and `protocol.Leave`. An optional `useClearAndLeave` boolean argument has now been added to indicate that `protocol.Clear` and `protocol.Leave` should be treated as cell actions instead of cell values. When this argument is not provided, `useAndClear` will be considered false and `protocol.Clear` and `protocol.Leave` will be treated as cell values.
+
+The following methods have been added to the `SLProtocol` and `SLProtocolExt` interfaces:
+
+```csharp
+protocol.FillArray(int tableId, object[] columns, DateTime? timeInfo, bool useClearAndLeave)
+protocol.FillArray(int tableId, object[] columns, bool useClearAndLeave)
+protocol.FillArray(int tableId, List<object[]> columns, DateTime? timeInfo, bool useClearAndLeave)
+protocol.FillArray(int tableId, List<object[]> columns, bool useClearAndLeave)
+protocol.FillArray(int tableId, List<object[]> rows, SaveOption option, DateTime? timeInfo, bool useClearAndLeave)
+protocol.FillArray(int tableId, List<object[]> rows, SaveOption option, bool useClearAndLeave)
+protocol.FillArrayNoDelete(int tableId, object[] columns, DateTime? timeInfo, bool useClearAndLeave)
+protocol.FillArrayNoDelete(int tableId, object[] columns, bool useClearAndLeave)
+protocol.FillArrayNoDelete(int tableId, List<object[]> columns, DateTime? timeInfo, bool useClearAndLeave)
+protocol.FillArrayNoDelete(int tableId, List<object[]> columns, bool useClearAndLeave)
+protocol.FillArrayWithColumn(int tableId, int columnPid, object[] keys, object[] values, DateTime? timeInfo, bool useClearAndLeave)
+protocol.FillArrayWithColumn(int tableId, int columnPid, object[] keys, object[] values, bool useClearAndLeave)
+```
+
+The `QActionHelper` class has also been adapted.
+
+- `protocol.Clear` and `protocol.Leave` are now supported when calling the `FillArray` methods on the `QActionTable` class objects of `SLProtocolExt`. The following methods have been added:
+
+  ```csharp
+  protocol.QActionTable.FillArray(object[] columns, DateTime? timeInfo, bool useClearAndLeave)
+  protocol.QActionTable.FillArray(object[] columns, bool useClearAndLeave)
+  protocol.QActionTable.FillArray(List<object> columns, DateTime? timeInfo, bool useClearAndLeave)
+  protocol.QActionTable.FillArray(List<object> columns, bool useClearAndLeave)
+  protocol.QActionTable.FillArray(QActionTableRow[] rows, DateTime? timeInfo, bool useClearAndLeave)
+  protocol.QActionTable.FillArray(QActionTableRow[] rows, bool useClearAndLeave)
+  protocol.QActionTable.FillArray(List<QActionTableRow> rows, DateTime? timeInfo, bool useClearAndLeave)
+  protocol.QActionTable.FillArray(List<QActionTableRow> rows, bool useClearAndLeave)
+  protocol.QActionTable.FillArrayNoDelete(object[] columns, DateTime? timeInfo, bool useClearAndLeave)
+  protocol.QActionTable.FillArrayNoDelete(object[] columns, bool useClearAndLeave)
+  protocol.QActionTable.FillArrayNoDelete(List<object> columns, DateTime? timeInfo, bool useClearAndLeave)
+  protocol.QActionTable.FillArrayNoDelete(List<object> columns, bool useClearAndLeave)
+  protocol.QActionTable.FillArrayNoDelete(QActionTableRow[] rows, DateTime? timeInfo, bool useClearAndLeave)
+  protocol.QActionTable.FillArrayNoDelete(QActionTableRow[] rows, bool useClearAndLeave)
+  protocol.QActionTable.FillArrayNoDelete(List<QActionTableRow> rows, DateTime? timeInfo, bool useClearAndLeave)
+  protocol.QActionTable.FillArrayNoDelete(List<QActionTableRow> rows, bool useClearAndLeave)
+  protocol.QActionTable.SetColumn(int columnPid, string[] keys, object[] values, DateTime? timeInfo, bool useClearAndLeave)
+  protocol.QActionTable.SetColumn(int columnPid, string[] keys, object[] values, bool useClearAndLeave)
+  ```
+
+- `protocol.Clear` and `protocol.Leave` are now supported when calling the `SetRow` method on the `QActionTable` class objects of `SLProtocolExt`. The following methods have been provided:
+
+  ```csharp
+  protocol.QActionTable.AddRow(string row, DateTime? timeInfo)
+  protocol.QActionTable.AddRow(object[] row, DateTime? timeInfo)
+  protocol.QActionTable.AddRow(QActionTableRow row, DateTime? timeInfo)
+  protocol.QActionTable.AddRowReturnKey(DateTime? timeInfo)
+  protocol.QActionTable.AddRowReturnKey(object[] row, DateTime? timeInfo)
+  protocol.QActionTable.AddRowReturnKey(QActionTableRow row, DateTime timeInfo)
+  protocol.QActionTable.SetRow(QActionTableRow row, bool createRow, DateTime? timeInfo, bool useClearAndLeave)
+  protocol.QActionTable.SetRow(QActionTableRow row, bool createRow, DateTime? timeInfo)
+  protocol.QActionTable.SetRow(QActionTableRow row, bool createRow, bool useClearAndLeave)
+  protocol.QActionTable.SetRow(int row, object[] data, DateTime? timeInfo, bool useClearAndLeave)
+  protocol.QActionTable.SetRow(int row, object[] data, DateTime? timeInfo)
+  protocol.QActionTable.SetRow(int row, object[] data, bool useClearAndLeave)
+  protocol.QActionTable.SetRow(string row, object[] data, bool createRow, DateTime? timeInfo, bool useClearAndLeave)
+  protocol.QActionTable.SetRow(string row, object[] data, bool createRow, DateTime? timeInfo)
+  protocol.QActionTable.SetRow(string row, object[] data, bool createRow, bool useClearAndLeave)
+  ```
+
+  > [!NOTE]
+  > The `AddRow` and `SetRow` methods can now also perform history sets.
+
+#### SSH: Support for hmac-sha2-512-etm and hmac-sha2-256-etm [ID_38213]
+
+<!-- MR 10.3.0 [CU11] - FR 10.4.2 -->
+
+DataMiner now supports two additional hash-based message authentication algorithms: *hmac-sha2-512-etm* and *hmac-sha2-256-etm*.
+
+From now on, it will propose the following algorithms to the server in the following order:
+
+1. hmac-sha2-512-etm\@openssh.com
+1. hmac-sha2-256-etm\@openssh.com
+1. hmac-sha2-512
+1. hmac-sha2-256
+1. hmac-sha1
+1. hmac-md5
+
 ## Changes
 
 ### Enhancements
 
-#### Security enhancements [ID_37349] [ID_38040] [ID_38052]
+#### Security enhancements [ID_37349] [ID_37637] [ID_38040] [ID_38052]
 
 <!-- 37349: MR 10.5.0 - FR 10.4.2 -->
+<!-- 37637 (part of 37734): MR 10.4.0 - FR 10.4.2 -->
 <!-- 38040: MR 10.3.0 [CU11] - FR 10.4.2 -->
 <!-- 38052: MR 10.5.0 - FR 10.4.2 -->
 
@@ -231,6 +334,12 @@ As storing profiles and resources in XML files is no longer supported as from Da
 
 Also, the *NotAllClusterAgentsReachable* error in ResourceManager is now considered obsolete and will no longer be returned.
 
+#### Reduction of number of information events when clients connect or disconnect [ID_37992]
+
+<!-- MR 10.3.0 [CU11] - FR 10.4.2 -->
+
+In DataMiner Systems with a large number of Agents, up to now, each Agent in the DataMiner System would generate an information event when a client application connected to or disconnected from a particular Agent. From now on, when a client application connects to or disconnects from an Agent, only that particular Agent will generate an information event.
+
 #### Enhanced performance when compiling QActions in SLScripting [ID_37993]
 
 <!-- MR 10.3.0 [CU11] - FR 10.4.2 -->
@@ -278,7 +387,7 @@ For example, from now on, when you sort by A and, later on in the GQI query, sor
 
 <!-- MR 10.5.0 - FR 10.4.2 -->
 
-Up to now, SLAnalytics would always keep one hour of average trend data for all trended parameters on the system in order to determine which trend icon to display in the absence of change points. From now on, it will only keep one hour of trend data for 250,000 trended parameters at the most, reducing memory usage to a maximum of 330 MB.
+Up to now, SLAnalytics would always keep average trend data for all trended parameters on the system for a configurable time frame in order to determine which trend icon to display in the absence of change points. From now on, it will only keep trend data and calculate state icons for 250,000 trended parameters at the most, reducing memory usage.
 
 #### NATS: All nodes will now be considered primary nodes [ID_38089]
 
@@ -300,6 +409,24 @@ The amount of memory used for flatline detection has been reduced.
 
 Up to now, when a *Join* operator of type "Right join" was applied, both the entire left query and the entire right query would be fetched. From now on, the right query will be fetched lazily.
 
+#### GQI: Sort operator will now be forwarded to the correct query of a Join operator [ID_38150]
+
+<!-- MR 10.5.0 - FR 10.4.2 -->
+
+When you add a Sort operator after adding a Join operator, that Sort operator will now automatically be forwarded to the correct query in the Join operator. This will considerably enhance performance, especially when sorting on a joined column.
+
+When you sort on a joined column, the Sort operator will be forwarded in the following situations:
+
+- In case of an inner join
+- In case of a left join, but only if all sorts are descending
+- In case of a right join
+
+#### Enhanced performance when deleting redundancy groups [ID_38173]
+
+<!-- MR 10.3.0 [CU11] - FR 10.4.2 -->
+
+Because of a number of enhancements, overall performance has increased when deleting a redundancy group.
+
 #### SLAnalytics - Behavioral anomaly detection: Enhanced anomaly check algorithm [ID_38176]
 
 <!-- MR 10.4.0 - FR 10.4.2 -->
@@ -312,7 +439,24 @@ A number of enhancements have been made to the anomaly check algorithm.
 
 SLLogCollector will now also collect the backup logs of the *StorageModule* DxM located in the `C:\ProgramData\Skyline Communications\DataMiner StorageModule\Logs\Backup` folder.
 
+#### DataMiner upgrade: Enhanced robustness of MSI package installations [ID_38376]
+
+<!-- MR 10.3.0 [CU12] - FR 10.4.2 [CU0] -->
+
+Up to now, during a DataMiner upgrade, in some cases, MSI packages would fail to install and throw one of the following errors:
+
+- `The Installer has insufficient privileges to access this directory: ...`
+- `Service ... could not be installed. Verify that you have sufficient privileges to install system services.`
+
+From now on, when one of the above-mentioned errors is thrown, it will no longer be necessary to restart the entire upgrade procedure. Instead, a retry will be attempted during the running upgrade.
+
 ### Fixes
+
+#### Failover: Problems when using hostnames instead of virtual IP addresses [ID_32951] [ID_35380]
+
+<!-- MR 10.3.0 [CU11] - FR 10.4.2 -->
+
+Up to now, a number of issues could occur when setting up a Failover system using hostnames instead of virtual IP addresses.
 
 #### Problems with SLDataMiner [ID_37409]
 
@@ -321,6 +465,12 @@ SLLogCollector will now also collect the backup logs of the *StorageModule* DxM 
 SLDataMiner would leak memory when retrieving the baseline values of an element while the relative baseline value was being updated. Also, an error could occur in SLDataMiner after a service had been created, updated or deleted.
 
 Apart from the above-mentioned fixes, memory management and overall error logging have also been improved.
+
+#### Failover: Shared hostname would incorrectly always refer to the same agent when using gRPC [ID_37558]
+
+<!-- MR 10.3.0 [CU11] - FR 10.4.2 [CU0] -->
+
+On a Failover system with a shared hostname using gRPC connections, the shared hostname would incorrectly always refer to the same agent, whether it was online or offline. From now on, the shared hostname will always refer to the online agent.
 
 #### PropertyConfiguration.xml: New properties could incorrectly be assigned an existing property ID [ID_37596]
 
@@ -436,6 +586,22 @@ When small, unlabelled changes were detected in a trend graph of a parameter of 
 
 When, while an extensive correlation rule action was running, you opened an element card of an element hosted on a DataMiner Agent other than the one you were connected to, loading the data of that element could get delayed until the correlation rule action had finished.
 
+#### Failover: Problem with DVE elements and virtual function elements after a Failover switch [ID_38167]
+
+<!-- MR 10.3.0 [CU11] - FR 10.4.2 -->
+
+After a Failover switch, in some cases, DVE elements or virtual function elements would not be loaded correctly. Also, new DVE elements would incorrectly not appear in the Surveyor when they were created while their parent element was hosted on the Failover setup that had switched.
+
+#### Problems with gRPC connections when SLNet was not running [ID_38177]
+
+<!-- MR 10.4.0 - FR 10.4.2 -->
+
+When a DataMiner Agent had the APIGateway service running but not the SLNet process (e.g. a DataMiner Agent that had been fully stopped), the following issues would occur:
+
+- No exception would be thrown when a client application sent a message via one of the gRPC connections that was still open. Instead, an empty response was returned. As a result, client applications would not notice that there was a problem.
+
+- When an attempt was made to establish a new gRPC connection, an `Invalid username or password` would be returned instead of a `DataMinerNotRunningException`.
+
 #### BPA test 'Check Cluster SLNet Connections' did not have valid signature [ID_38201] [ID_38208]
 
 <!-- MR 10.3.0 [CU11] - FR 10.4.2 -->
@@ -443,3 +609,53 @@ When, while an extensive correlation rule action was running, you opened an elem
 When you ran the BPA test 'Check Cluster SLNet Connections', this failed with the exception message `BPA doesn’t have a valid signature`. The BPA has now been signed correctly, so this issue will no longer occur.
 
 From now on, this test will be run daily on every Agent in a DataMiner System.
+
+#### SLAnalytics - Automatic incident tracking: Problem after clearing or removing an alarm [ID_38239]
+
+<!-- MR 10.4.0 - FR 10.4.2 -->
+
+When an alarm had been cleared or removed, in some cases, the automatic incident tracking feature could incorrectly assume that no more alarms were associated with the parameter in question. As a result, alarms could get grouped incorrectly or error messages similar to the following one could start to appear:
+
+`Parameter key [PARAMETER_KEY] was not in parameterKeyConverter, while it should have been.`
+
+#### SLAnalytics - Automatic incident tracking: Empty alarm group would be created when manually creating an incident with non-active alarms [ID_38248]
+
+<!-- MR 10.4.0 - FR 10.4.2 -->
+
+When, while automatic incident tracking was running, you manually created an incident (i.e. an alarm group) containing non-active alarms, an empty alarm group would be created.
+
+#### Service & Resource Management: Incorrect trace data would be returned after performing a create, update or delete action using the ServiceManagerHelper [ID_38262]
+
+<!-- MR 10.3.0 [CU11] - FR 10.4.2 -->
+
+When you retrieved the trace data after performing a create, update or delete action using the ServiceManagerHelper, in some cases, an error could be returned although the action that was performed had succeeded.
+
+#### SLAnalytics could stop working when it lost its connection to SLNet during start-up [ID_38268]
+
+<!-- MR 10.3.0 [CU11] - FR 10.4.2 -->
+
+Up to now, when SLAnalytics lost its connection to SLNet at a particular moment during start-up, it would stop working because it was not able to reach the database. From now on, when SLAnalytics loses its connection to SLNet at that particular moment during start-up, it will continue working and will try to connect to the database again as soon as its connection to SLNet has been re-established.
+
+#### Correlation alarms with incorrect severity after a DataMiner restart [ID_38286]
+
+<!-- MR 10.3.0 [CU11] - FR 10.4.2 -->
+
+After a DataMiner restart, in some cases, correlation alarms would have an incorrect severity.
+
+#### BPA test 'Check Cluster SLNet Connections' could incorrectly report connection problems when it found a Failover system with a shared hostname [ID_38328]
+
+<!-- MR 10.3.0 [CU11] - FR 10.4.2 [CU0] -->
+
+Up to now, the BPA test *Check Cluster SLNet Connections* BPA could incorrectly report connection problems in a DataMiner System when it found a Failover setup with a shared hostname.
+
+#### SLReset: Problem when cleaning a Cassandra database [ID_38332]
+
+<!-- MR 10.5.0 - FR 10.4.2 -->
+
+When cleaning (i.e. resetting) a Cassandra database, in some cases, a `TypeInitializationException` could be thrown.
+
+#### Failover: NATS would incorrectly be reconfigured when both agents were offline [ID_38349]
+
+<!-- MR 10.3.0 [CU11] - FR 10.4.2 [CU0] -->
+
+When both agents in a Failover setup were offline, in some cases, they would incorrectly reconfigure the NATS settings.
