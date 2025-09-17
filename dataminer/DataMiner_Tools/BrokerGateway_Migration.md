@@ -13,7 +13,7 @@ Once the [prerequisites](#prerequisites) are met, you can either [run an automat
 
 Note that prior to DataMiner 10.5.0 [CU4]/10.5.7, this migration requires a DataMiner restart.<!-- RN 42930 -->
 
-From DataMiner 10.6.0 onwards, this migration will happen automatically during a DataMiner upgrade.
+Starting from DataMiner 10.6.0, BrokerGateway is mandatory. Therefore, you cannot upgrade to this version unless the DMS has been migrated.
 
 After the migration, you may need to [update your Data Aggregator configuration](#updating-the-data-aggregator-configuration).
 
