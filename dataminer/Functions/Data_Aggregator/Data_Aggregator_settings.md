@@ -75,6 +75,10 @@ If [BrokerGateway](xref:BrokerGateway_Migration) is enabled, specify the followi
 
   > [!NOTE]
   > This setting is available from Data Aggregator version 3.2.0 onwards.
+  > When you make the following changes to a DMS, you will need to replace the *.creds* file:
+  >
+  > - Changing the IP address of one or more DataMiner Agents.
+  > - Adding or removing one or more DataMiner Agents to/from the DMS.
 
 ### DMS without BrokerGateway
 
